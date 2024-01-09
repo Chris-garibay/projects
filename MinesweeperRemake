@@ -1,0 +1,125 @@
+import java.util.Scanner;
+class Main {
+  public static void main(String[] args) 
+  {
+    Scanner input = new Scanner(System.in);
+    System.out.println("What dificulty do you want to play on.\n" + "easy, medium, or hard.");
+    String dif = input.nextLine();
+    
+    Game idk = new Game(dif);
+    
+    String reset = "yes";
+    while(reset.equalsIgnoreCase("yes"))
+    {
+      idk.fill();
+      idk.print();
+      
+      System.out.println("there are " + idk.getNumBombs() + " bombs");
+      
+      System.out.println("to remove flag say no to flag then choose it as normal.");
+      
+      while(idk.getNumShown() != idk.getSize() - idk.getNumBombs() && idk.getNumShown() < idk.getSize() - idk.getNumBombs())
+      {
+  
+        if(idk.getNumFlags() > idk.getNumBombs())
+        {
+          if(idk.getNumFlags() - idk.getNumBombs() == 1)
+          {
+            System.out.println("you have" + (idk.getNumFlags() - idk.getNumBombs()) +  "more flag than bombs you have to remove some.");
+          }
+          else
+          {
+            System.out.println("you have" + (idk.getNumFlags() - idk.getNumBombs()) +  "more flags than bombs you have to remove some.");
+          }
+          System.out.println("to remove flag say no to flag then choose it as normal.");
+        }
+        
+        if(idk.getNumFlags() == 1)
+        {
+          System.out.println("you have flagged " + idk.getNumFlags() + " bomb");
+        }
+        else if(idk.getNumFlags() > 1)
+        {
+          System.out.println("you have flagged " + idk.getNumFlags() + " bombs");
+        }
+        System.out.println("Would you like to flag");
+        String dec = input.nextLine();
+        
+        while((!dec.equalsIgnoreCase("yes") || dec.equalsIgnoreCase("no")) && (dec.equalsIgnoreCase("yes") || !dec.equalsIgnoreCase("no")))
+        {
+          
+          System.out.println("answer with a yes or no.");
+          dec = input.nextLine();
+        }
+
+        if(dec.equalsIgnoreCase("no") && (idk.getNumShown() != idk.getSize() - idk.getNumBombs() && idk.getNumShown() < idk.getSize() - idk.getNumBombs()))
+        {
+          System.out.println("pick a row");
+          int row = input.nextInt();
+          System.out.println("pick a col");
+          int col = input.nextInt();
+          while(!idk.check(row,col))
+          {
+            System.out.println("pick a row");
+            row = input.nextInt();
+            System.out.println("pick a col");
+            col = input.nextInt();
+            
+          }
+          input.nextLine();
+          if(!idk.isGameOver(row,col) && idk.checkLose(row,col,dec))
+          {
+            idk.turn(row,col);
+          }
+        }
+        else if(dec.equalsIgnoreCase("yes") && (idk.getNumShown() != idk.getSize() - idk.getNumBombs() && idk.getNumShown() < idk.getSize() - idk.getNumBombs()))
+        {
+          System.out.println("pick a row");
+          int row = input.nextInt();
+          System.out.println("pick a col");
+          int col = input.nextInt();
+          while(!idk.check(row,col))
+          {
+            System.out.println("pick a row");
+            row = input.nextInt();
+            System.out.println("pick a col");
+            col = input.nextInt();
+          }
+          input.nextLine();
+          if(!idk.isGameOver(row,col) && idk.checkLose(row,col,dec))
+          {
+            idk.flag(row,col);
+          }
+        }
+        
+    }
+    
+    if(idk.isWinner())
+    {
+      System.out.println("You have won!");
+      System.out.println();
+      idk.isWinner();
+    }
+    System.out.println("would you like to reset.");
+    reset = input.nextLine();
+    while((!reset.equalsIgnoreCase("yes") || reset.equalsIgnoreCase("no")) && (reset.equalsIgnoreCase("yes") || !reset.equalsIgnoreCase("no")))
+    {
+      System.out.println("answer with a yes or no.");
+      reset = input.nextLine();
+    }
+    if(reset.equalsIgnoreCase("yes"))
+    {
+      idk.reset();
+    }
+  }
+
+
+
+
+
+    
+    
+  }
+
+  
+}
