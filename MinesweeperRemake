@@ -1,3 +1,1191 @@
+public class Game
+{
+  private int numBombs;
+  private String[][] board;
+  private String[][] showBoard;
+  private int turn;
+  private int numShown = 0;
+  private int size;
+  private int run = 0;
+  private int numFlags = 0;
+  private int shownCount = 0;
+
+  public Game(String dif)
+  {
+    if(dif.equalsIgnoreCase("easy"))
+    {
+      numBombs = 10;
+      board = new String[9][9];
+      showBoard = new String[9][9];
+      size = 9 * 9;
+      System.out.println("you are playing on a 9 by 9");
+    }
+    else if(dif.equalsIgnoreCase("medium"))
+    {
+      numBombs = 15;
+      board = new String[12][12];
+      showBoard = new String[12][12];
+      size = 12 * 12;
+      System.out.println("you are playing on a 12 by 12");
+    }
+    else if(dif.equalsIgnoreCase("hard"))
+    {
+      numBombs =25;
+      board = new String[15][15];
+      showBoard = new String[15][15];
+      size = 15 * 15;
+      System.out.println("you are playing on a 15 by 15");
+    }
+    else if(dif.equalsIgnoreCase("test"))
+    {
+      numBombs = 1;
+      board = new String[5][5];
+      showBoard = new String[5][5];
+      size = 5 * 5;
+      System.out.println("you are playing on a 5 by 5");
+    }
+    turn = 1;
+  }
+
+  public void fill()
+  {
+    //board fill
+    for(int row = 0; row< board.length;row++)
+    {
+      for(int col = 0; col < board[0].length;col++)
+      {
+        board[row][col] = " 0 ";
+      }
+    }
+
+    //showBoard fill
+    for(int row = 0; row< board.length;row++)
+    {
+      for(int col = 0; col < board[0].length;col++)
+      {
+        showBoard[row][col] = " # ";
+      }
+    }
+
+    //bomb placing
+    int count = 0;
+    while(count < numBombs)
+    {
+      int row =  (int) Math.round(Math.random()*(board.length-1));
+      int col = (int) Math.round(Math.random()*(board.length-1));
+      if(!board[row][col].equals(" B "))
+      {
+      board[row][col] = " B ";
+      count++;
+      }
+    }
+
+    //topleft corner
+    count = 0;
+    if(board[0][1].equals(" B "))
+    {
+      count++;
+    }
+    if(board[1][1].equals(" B "))
+    {
+      count++;
+    }
+    if(board[1][0].equals(" B "))
+    {
+      count++;
+    }
+    if(!board[0][0].equals(" B "))
+    {
+      board[0][0] = " " + Integer.toString(count) + " ";
+    }
+
+    //top right corner
+    count = 0;
+    if(board[0][board.length-2].equals(" B "))
+    {
+      count++;
+    }
+    if(board[1][board.length-1].equals(" B "))
+    {
+      count++;
+    }
+    if(board[1][board.length-2].equals(" B "))
+    {
+      count++;
+    }
+    if(!board[0][board.length-1].equals(" B "))
+    {
+      board[0][board.length-1] = " " + Integer.toString(count) + " ";
+    }
+
+    //bottom left corner
+    count = 0;
+    if(board[board.length-1][1].equals(" B "))
+    {
+      count++;
+    }
+    if(board[board.length-2][0].equals(" B "))
+    {
+      count++;
+    }
+    if(board[board.length-2][1].equals(" B "))
+    {
+      count++;
+    }
+    if(!board[board.length-1][0].equals(" B "))
+    {
+      board[board.length-1][0] = " " + Integer.toString(count) + " ";
+    }
+
+    //bottom right corner
+    count = 0;
+    if(board[board.length-1][board.length-2].equals(" B "))
+    {
+      count++;
+    }
+    if(board[board.length-2][board.length-1].equals(" B "))
+    {
+      count++;
+    }
+    if(board[board.length-2][board.length-2].equals(" B "))
+    {
+      count++;
+    }
+    if(!board[board.length-1][board.length-1].equals(" B "))
+    {
+      board[board.length-1][board.length-1] = " " + Integer.toString(count) + " ";
+    }
+
+    //middle
+    for(int row = 1; row< board.length-1;row++)
+    {
+      for(int col = 1; col < board[0].length-1;col++)
+      {
+        count = 0;
+        if(board[row-1][col].equals(" B "))
+        {
+          count++;
+        }
+        if(board[row-1][col+1].equals(" B "))
+        {
+          count++;
+        }
+        if(board[row][col+1].equals(" B "))
+        {
+          count++;
+        }
+        if(board[row+1][col+1].equals(" B "))
+        {
+          count++;
+        }
+        if(board[row+1][col].equals(" B "))
+        {
+          count++;
+        }
+        if(board[row+1][col-1].equals(" B "))
+        {
+          count++;
+        }
+        if(board[row][col-1].equals(" B "))
+        {
+          count++;
+        }
+        if(board[row-1][col-1].equals(" B "))
+        {
+          count++;
+        }
+        
+        
+        if(!board[row][col].equals(" B "))
+        {
+          board[row][col] = " " + Integer.toString(count) + " ";
+        }
+      }
+    }
+
+    //left edge
+    for(int row = 1; row< board.length-1;row++)
+    {
+      count = 0;
+      if(board[row-1][0].equals(" B "))
+      {
+        count++;
+      }
+      if(board[row-1][1].equals(" B "))
+      {
+        count++;
+      }
+      if(board[row][1].equals(" B "))
+      {
+        count++;
+      }
+      if(board[row+1][1].equals(" B "))
+      {
+        count++;
+      }
+      if(board[row+1][0].equals(" B "))
+      {
+        count++;
+      }
+      
+      if(!board[row][0].equals(" B "))
+      {
+        board[row][0] = " " + Integer.toString(count) + " ";
+      }
+    }
+
+    //right edge
+    for(int row = 1; row< board.length-1;row++)
+    {
+      count = 0;
+      if(board[row-1][board.length-1].equals(" B "))
+      {
+        count++;
+      }
+      if(board[row-1][board.length-2].equals(" B "))
+      {
+        count++;
+      }
+      if(board[row][board.length-2].equals(" B "))
+      {
+        count++;
+      }
+      if(board[row+1][board.length-2].equals(" B "))
+      {
+        count++;
+      }
+      if(board[row+1][board.length-1].equals(" B "))
+      {
+        count++;
+      }
+      
+      if(!board[row][board.length-1].equals(" B "))
+      {
+        board[row][board.length-1] = " " + Integer.toString(count) + " ";
+      }
+    }
+
+    //top edge
+    for(int col = 1; col < board.length-1; col++)
+    {
+      count = 0;
+      if(board[0][col-1].equals(" B "))
+      {
+        count++;
+      }
+      if(board[1][col-1].equals(" B "))
+      {
+        count++;
+      }
+      if(board[1][col].equals(" B "))
+      {
+        count++;
+      }
+      if(board[1][col+1].equals(" B "))
+      {
+        count++;
+      }
+      if(board[0][col+1].equals(" B "))
+      {
+        count++;
+      }
+      
+      if(!board[0][col].equals(" B "))
+      {
+        board[0][col] = " " + Integer.toString(count) + " ";
+      }
+    }
+
+    //bottom edge
+    for(int col = 1; col < board.length-1; col++)
+    {
+      count = 0;
+      if(board[board.length-1][col-1].equals(" B "))
+      {
+        count++;
+      }
+      if(board[board.length-2][col-1].equals(" B "))
+      {
+        count++;
+      }
+      if(board[board.length-2][col].equals(" B "))
+      {
+        count++;
+      }
+      if(board[board.length-2][col+1].equals(" B "))
+      {
+        count++;
+      }
+      if(board[board.length-1][col+1].equals(" B "))
+      {
+        count++;
+      }
+      
+      if(!board[board.length-1][col].equals(" B "))
+      {
+        board[board.length-1][col] = " " + Integer.toString(count) + " ";
+      }
+    }
+  }  
+
+  public void flag(int row, int col)
+  {
+    showBoard[row][col] = " ! ";
+    numFlags++;
+    print();
+  }
+    
+  public boolean check(int row, int col)
+  {
+    if(row < 0 || row > board.length-1  || col < 0 || col >board.length-1)
+    {
+      System.out.println("Select again. out of bounds.");
+      return false;
+    }
+    else if(!showBoard[row][col].equals(" # ") && board[row][col].equals(" 0 "))
+    {
+      System.out.println("Select again. already taken ");
+      return false;
+    }
+    return true;
+  }
+
+  public int getTurn()
+  {
+    return turn;
+  }
+
+  public int getNumBombs()
+  {
+    return numBombs;
+  }
+
+  public int getNumShown()
+  {
+    return numShown;
+  }
+
+  public int getNumFlags()
+  {
+    return numFlags;
+  }
+
+  public int getSize()
+  {
+    return size;
+  }
+
+  public String clas(int row, int col)
+  {
+    String clas = "";
+    if(!board[row][col].equals(" B "))
+    {  
+      if(row == 0 && col == 0)
+      {
+        clas = "top left";
+      }
+      else if(row == 0 && col == board.length-1)
+      {
+        clas = "top right";
+      }
+      else if(row == board.length-1 && col == 0)
+      {
+        clas = "bottom left";
+      }
+      else if(row == board.length-1 && col == board.length-1)
+      {
+        clas = "bottom right";
+      }
+      else if(row == 0)
+      {
+        clas = "top";
+      }
+      else if(row == board.length - 1)
+      {
+        clas = "bottom";
+      }
+      else if(col == 0)
+      {
+        clas = "left";
+      }
+      else if(col == board.length - 1)
+      {
+        clas = "right";
+      }
+      else
+      {
+        clas = "middle";
+      }
+      
+
+    }
+    return clas;
+  }
+  
+  public void reveal(int row, int col)
+  {
+    //for zeros
+    if(board[row][col].equals(" 0 "))
+    {
+      if(clas(row,col).equals("top"))
+      {
+        if(!board[row][col-1].equals(" B "))
+        {
+          if(showBoard[row][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row][col-1].equals(" 0 ") && showBoard[row][col-1].equals(" # "))
+          {
+            showBoard[row][col-1] = board[row][col-1];
+            reveal(row,col-1);
+          }
+          else{showBoard[row][col-1] = board[row][col-1];}
+        }
+        if(!board[row][col+1].equals(" B "))
+        {
+          if(showBoard[row][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row][col+1].equals(" 0 ") && showBoard[row][col+1].equals(" # "))
+          {
+            showBoard[row][col+1] = board[row][col+1];
+            reveal(row,col+1);
+          }
+          else{showBoard[row][col+1] = board[row][col+1];}
+        }
+        if(!board[row+1][col-1].equals(" B "))
+        {
+          if(showBoard[row+1][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col-1].equals(" 0 ") && showBoard[row+1][col-1].equals(" # "))
+          {
+            showBoard[row+1][col-1] = board[row+1][col-1];
+            reveal(row+1,col-1);
+          }
+          else{showBoard[row+1][col-1] = board[row+1][col-1];}
+        }
+        if(!board[row+1][col].equals(" B "))
+        {
+          if(showBoard[row+1][col].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col].equals(" 0 ") && showBoard[row+1][col].equals(" # "))
+          {
+            showBoard[row+1][col] = board[row+1][col];
+            reveal(row+1,col);
+          }
+          else{showBoard[row+1][col] = board[row+1][col];}
+        }
+        if(!board[row+1][col+1].equals(" B "))
+        {
+          if(showBoard[row+1][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col+1].equals(" 0 ") && showBoard[row+1][col+1].equals(" # "))
+          {
+            showBoard[row+1][col+1] = board[row+1][col+1];
+            reveal(row+1,col+1);
+          }
+          else{showBoard[row+1][col+1] = board[row+1][col+1];}
+        }
+        
+        
+        if(!board[row][col].equals(" B "))
+        {
+          if(showBoard[row][col].equals(" # "))
+          {numShown++;}
+          showBoard[row][col] = board[row][col];
+        }
+      }
+      else if(clas(row,col).equals("bottom"))
+      {
+        if(!board[row][col-1].equals(" B "))
+        {
+          if(showBoard[row][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row][col-1].equals(" 0 ") && showBoard[row][col-1].equals(" # "))
+          {
+            showBoard[row][col-1] = board[row][col-1];
+            reveal(row,col-1);
+          }
+          else{showBoard[row][col-1] = board[row][col-1];}
+        }
+        if(!board[row-1][col-1].equals(" B "))
+        {
+          if(showBoard[row-1][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col-1].equals(" 0 ") && showBoard[row-1][col-1].equals(" # "))
+          {
+            showBoard[row-1][col-1] = board[row-1][col-1];
+            reveal(row-1,col-1);
+          }
+          else{showBoard[row-1][col-1] = board[row-1][col-1];}
+        }
+        if(!board[row-1][col].equals(" B "))
+        {
+          if(showBoard[row-1][col].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col].equals(" 0 ") && showBoard[row-1][col].equals(" # "))
+          {
+            showBoard[row-1][col] = board[row-1][col];
+            reveal(row-1,col);
+          }
+          else{showBoard[row-1][col] = board[row-1][col];}
+        }
+        if(!board[row-1][col+1].equals(" B "))
+        {
+          if(showBoard[row-1][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col+1].equals(" 0 ") && showBoard[row-1][col+1].equals(" # "))
+          {
+            showBoard[row-1][col+1] = board[row-1][col+1];
+            reveal(row-1,col+1);
+          }
+          else{showBoard[row-1][col+1] = board[row-1][col+1];}
+        }
+        if(!board[row][col+1].equals(" B "))
+        {
+          if(showBoard[row][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row][col+1].equals(" 0 ") && showBoard[row][col+1].equals(" # "))
+          {
+            showBoard[row][col+1] = board[row][col+1];
+            reveal(row,col+1);
+          }
+          else{showBoard[row][col+1] = board[row][col+1];}
+        }
+        
+        if(!board[row][col].equals(" B "))
+        {
+          if(showBoard[row][col+1].equals(" # "))
+          {numShown++;}
+          showBoard[row][col] = board[row][col];
+        }
+      }
+      else if(clas(row,col).equals("left"))
+      {
+        if(!board[row-1][col].equals(" B "))
+        {
+          if(showBoard[row-1][col].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col].equals(" 0 ") && showBoard[row-1][col].equals(" # "))
+          {
+            showBoard[row-1][col] = board[row-1][col];
+            reveal(row-1,col);
+          }
+          else{showBoard[row-1][col] = board[row-1][col];}
+        }
+        if(!board[row-1][col+1].equals(" B "))
+        {
+          if(showBoard[row-1][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col+1].equals(" 0 ") && showBoard[row-1][col+1].equals(" # "))
+          {
+            showBoard[row-1][col+1] = board[row-1][col+1];
+            reveal(row-1,col+1);
+          }
+          else{showBoard[row-1][col+1] = board[row-1][col+1];}
+        }
+        if(!board[row][col+1].equals(" B "))
+        {
+          if(showBoard[row][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row][col+1].equals(" 0 ") && showBoard[row][col+1].equals(" # "))
+          {
+            showBoard[row][col+1] = board[row][col+1];
+            reveal(row,col+1);
+          }
+          else{showBoard[row][col+1] = board[row][col+1];}
+        }
+        if(!board[row+1][col+1].equals(" B "))
+        {
+          if(showBoard[row+1][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col+1].equals(" 0 ") && showBoard[row+1][col+1].equals(" # "))
+          {
+            showBoard[row+1][col+1] = board[row+1][col+1];
+            reveal(row+1,col+1);
+          }
+          else{showBoard[row+1][col+1] = board[row+1][col+1];}
+        }
+        if(!board[row+1][col].equals(" B "))
+        {
+          if(showBoard[row+1][col].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col].equals(" 0 ") && showBoard[row+1][col].equals(" # "))
+          {
+            showBoard[row+1][col] = board[row+1][col];
+            reveal(row+1,col);
+          }
+          else{showBoard[row+1][col] = board[row+1][col];}
+        }
+        
+        if(!board[row][col].equals(" B "))
+        {
+          if(showBoard[row][col].equals(" # "))
+          {numShown++;}
+          showBoard[row][col] = board[row][col];
+        }
+      }
+      else if(clas(row,col).equals("right"))
+      {
+        if(!board[row-1][col].equals(" B "))
+        {
+          if(showBoard[row-1][col].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col].equals(" 0 ") && showBoard[row-1][col].equals(" # "))
+          {
+            showBoard[row-1][col] = board[row-1][col];
+            reveal(row-1,col);
+          }
+          else{showBoard[row-1][col] = board[row-1][col];}
+        }
+        if(!board[row-1][col-1].equals(" B "))
+        {
+          if(showBoard[row-1][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col-1].equals(" 0 ") && showBoard[row-1][col-1].equals(" # "))
+          {
+            showBoard[row-1][col-1] = board[row-1][col-1];
+            reveal(row-1,col-1);
+          }
+          else{showBoard[row-1][col-1] = board[row-1][col-1];}
+        }
+        if(!board[row][col-1].equals(" B "))
+        {
+          if(showBoard[row][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row][col-1].equals(" 0 ") && showBoard[row][col-1].equals(" # "))
+          {
+            showBoard[row][col-1] = board[row][col-1];
+            reveal(row,col-1);
+          }
+          else{showBoard[row][col-1] = board[row][col-1];}
+        }
+        if(!board[row+1][col-1].equals(" B "))
+        {
+          if(showBoard[row+1][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col-1].equals(" 0 ") && showBoard[row+1][col-1].equals(" # "))
+          {
+            showBoard[row+1][col-1] = board[row+1][col-1];
+            reveal(row+1,col-1);
+          }
+          else{showBoard[row+1][col-1] = board[row+1][col-1];}
+        }
+        if(!board[row+1][col].equals(" B "))
+        {
+          if(showBoard[row+1][col].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col].equals(" 0 ") && showBoard[row+1][col].equals(" # "))
+          {
+            showBoard[row+1][col] = board[row+1][col];
+            reveal(row+1,col);
+          }
+          else{showBoard[row+1][col] = board[row+1][col];}
+        }
+        
+        if(!board[row][col].equals(" B "))
+        {
+          if(showBoard[row][col].equals(" # "))
+          {numShown++;}
+          showBoard[row][col] = board[row][col];
+        }
+      }
+      else if(clas(row,col).equals("middle"))
+      {
+        if(!board[row-1][col].equals(" B "))
+        {
+          if(showBoard[row-1][col].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col].equals(" 0 ") && showBoard[row-1][col].equals(" # "))
+          {
+            showBoard[row-1][col] = board[row-1][col];
+            reveal(row-1,col);
+          }
+          else{showBoard[row-1][col] = board[row-1][col];}
+        }
+        if(!board[row-1][col+1].equals(" B "))
+        {
+          if(showBoard[row-1][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col+1].equals(" 0 ") && showBoard[row-1][col+1].equals(" # "))
+          {
+            showBoard[row-1][col+1] = board[row-1][col+1];
+            reveal(row-1,col+1);
+          }
+          else{showBoard[row-1][col+1] = board[row-1][col+1];}
+        }
+        if(!board[row][col+1].equals(" B "))
+        {
+          if(showBoard[row][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row][col+1].equals(" 0 ") && showBoard[row][col+1].equals(" # "))
+          {
+            showBoard[row][col+1] = board[row][col+1];
+            reveal(row,col+1);
+          }
+          else{showBoard[row][col+1] = board[row][col+1];}
+        }
+        if(!board[row+1][col+1].equals(" B "))
+        {
+          if(showBoard[row+1][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col+1].equals(" 0 ") && showBoard[row+1][col+1].equals(" # "))
+          {
+            showBoard[row+1][col+1] = board[row+1][col+1];
+            reveal(row+1,col+1);
+          }
+          else{showBoard[row+1][col+1] = board[row+1][col+1];}
+        }
+        if(!board[row+1][col].equals(" B "))
+        {
+          if(showBoard[row+1][col].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col].equals(" 0 ") && showBoard[row+1][col].equals(" # "))
+          {
+            showBoard[row+1][col] = board[row+1][col];
+            reveal(row+1,col);
+          }
+          else{showBoard[row+1][col] = board[row+1][col];}
+        }
+        if(!board[row+1][col-1].equals(" B "))
+        {
+          if(showBoard[row+1][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col-1].equals(" 0 ") && showBoard[row+1][col-1].equals(" # "))
+          {
+            showBoard[row+1][col-1] = board[row+1][col-1];
+            reveal(row+1,col-1);
+          }
+          else{showBoard[row+1][col-1] = board[row+1][col-1];}
+        }
+        if(!board[row][col-1].equals(" B "))
+        {
+          if(showBoard[row][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row][col-1].equals(" 0 ") && showBoard[row][col-1].equals(" # "))
+          {
+            showBoard[row][col-1] = board[row][col-1];
+            reveal(row,col-1);
+          }
+          else{showBoard[row][col-1] = board[row][col-1];}
+        }
+        if(!board[row-1][col-1].equals(" B "))
+        {
+          if(showBoard[row-1][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col-1].equals(" 0 ") && showBoard[row-1][col-1].equals(" # "))
+          {
+            showBoard[row-1][col-1] = board[row-1][col-1];
+            reveal(row-1,col-1);
+          }
+          else{showBoard[row-1][col-1] = board[row-1][col-1];}
+        }
+        
+        
+        if(!board[row][col].equals(" B "))
+        {
+          if(showBoard[row][col].equals(" # "))
+          {numShown++;}
+          showBoard[row][col] = board[row][col];
+        }
+      }
+      else if(clas(row,col).equals("top left"))
+      {
+        if(!board[row][col+1].equals(" B "))
+        {
+          if(showBoard[row][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row][col+1].equals(" 0 ") && showBoard[row][col+1].equals(" # "))
+          {
+            showBoard[row][col+1] = board[row][col+1];
+            reveal(row,col+1);
+          }
+          else{showBoard[row][col+1] = board[row][col+1];}
+        }
+        if(!board[row+1][col+1].equals(" B "))
+        {
+          if(showBoard[row+1][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col+1].equals(" 0 ") && showBoard[row+1][col+1].equals(" # "))
+          {
+            showBoard[row+1][col+1] = board[row+1][col+1];
+            reveal(row+1,col+1);
+          }
+          else{showBoard[row+1][col+1] = board[row+1][col+1];}
+        }
+        if(!board[row+1][col].equals(" B "))
+        {
+          if(showBoard[row+1][col].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col].equals(" 0 ") && showBoard[row+1][col].equals(" # "))
+          {
+            showBoard[row+1][col] = board[row+1][col];
+            reveal(row+1,col);
+          }
+          else{showBoard[row+1][col] = board[row+1][col];}
+        }
+        
+        if(!board[row][col].equals(" B "))
+        {
+          if(showBoard[row][col].equals(" # "))
+          {numShown++;}
+          showBoard[row][col] = board[row][col];
+        }
+      }
+      else if(clas(row,col).equals("top right"))
+      {
+        if(!board[row][col-1].equals(" B "))
+        {
+          if(showBoard[row][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row][col-1].equals(" 0 ") && showBoard[row][col-1].equals(" # "))
+          {
+            showBoard[row][col-1] = board[row][col-1];
+            reveal(row,col-1);
+          }
+          else{showBoard[row][col-1] = board[row][col-1];}
+        }
+        if(!board[row+1][col].equals(" B "))
+        {
+          if(showBoard[row+1][col].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col].equals(" 0 ") && showBoard[row+1][col].equals(" # "))
+          {
+            showBoard[row+1][col] = board[row+1][col];
+            reveal(row+1,col);
+          }
+          else{showBoard[row+1][col] = board[row+1][col];}
+        }
+        if(!board[row+1][col-1].equals(" B "))
+        {
+          if(showBoard[row+1][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row+1][col-1].equals(" 0 ") && showBoard[row+1][col-1].equals(" # "))
+          {
+            showBoard[row+1][col-1] = board[row+1][col-1];
+            reveal(row+1,col-1);
+          }
+          else{showBoard[row+1][col-1] = board[row+1][col-1];}
+        }
+        
+        if(!board[row][col].equals(" B "))
+        {
+          if(showBoard[row][col].equals(" # "))
+          {numShown++;}
+          showBoard[row][col] = board[row][col];
+        }
+      }
+      else if(clas(row,col).equals("bottom left"))
+      {
+        if(!board[row][col+1].equals(" B "))
+        {
+          if(showBoard[row][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row][col+1].equals(" 0 ") && showBoard[row][col+1].equals(" # "))
+          {
+            showBoard[row][col+1] = board[row][col+1];
+            reveal(row,col+1);
+          }
+          else{showBoard[row][col+1] = board[row][col+1];}
+        }
+        if(!board[row-1][col].equals(" B "))
+        {
+          if(showBoard[row-1][col].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col].equals(" 0 ") && showBoard[row-1][col].equals(" # "))
+          {
+            showBoard[row-1][col] = board[row-1][col];
+            reveal(row-1,col);
+          }
+          else{showBoard[row-1][col] = board[row-1][col];}
+        }
+        if(!board[row-1][col+1].equals(" B "))
+        {
+          if(showBoard[row-1][col+1].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col+1].equals(" 0 ") && showBoard[row-1][col+1].equals(" # "))
+          {
+            showBoard[row-1][col+1] = board[row-1][col+1];
+            reveal(row-1,col+1);
+          }
+          else{showBoard[row-1][col+1] = board[row-1][col+1];}
+        }
+        
+        if(!board[row][col].equals(" B "))
+        {
+          if(showBoard[row][col].equals(" # "))
+          {numShown++;}
+          showBoard[row][col] = board[row][col];
+        }
+      }
+      else if(clas(row,col).equals("bottom right"))
+      {
+        if(!board[row][col-1].equals(" B "))
+        {
+          if(showBoard[row][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row][col-1].equals(" 0 ") && showBoard[row][col-1].equals(" # "))
+          {
+            showBoard[row][col-1] = board[row][col-1];
+            reveal(row,col-1);
+          }
+          else{showBoard[row][col-1] = board[row][col-1];}
+        }
+        if(!board[row-1][col].equals(" B "))
+        {
+          if(showBoard[row-1][col].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col].equals(" 0 ") && showBoard[row-1][col].equals(" # "))
+          {
+            showBoard[row-1][col] = board[row-1][col];
+            reveal(row-1,col);
+          }
+          else{showBoard[row-1][col] = board[row-1][col];}
+        }
+        if(!board[row-1][col-1].equals(" B "))
+        {
+          if(showBoard[row-1][col-1].equals(" # "))
+          {numShown++;}
+          if(board[row-1][col-1].equals(" 0 ") && showBoard[row-1][col-1].equals(" # "))
+          {
+            showBoard[row-1][col-1] = board[row-1][col-1];
+            reveal(row-1,col-1);
+          }
+          else{showBoard[row-1][col-1] = board[row-1][col-1];}
+        }
+        
+        if(!board[row][col].equals(" B "))
+        {
+          if(showBoard[row][col].equals(" # "))
+          {numShown++;}
+          showBoard[row][col] = board[row][col];
+        }
+      }
+    }
+    //for nums higher than zero
+    else if(!board[row][col].equals(" 0 ") && !board[row][col].equals(" B "))
+    {
+      if(!board[row][col].equals(" B "))
+      {
+        if(showBoard[row][col].equals(" # "))
+          {numShown++;}
+        showBoard[row][col] = board[row][col];
+      }
+    }
+
+    else if(showBoard[row][col].equals(" ! "))
+    {
+      showBoard[row][col] = " # ";
+      System.out.println("you have removed flag at " + row + ", " + col);
+      numFlags--;
+    }
+
+    
+    
+  }
+
+  public void turn(int row, int col)
+  {
+    reveal(row,col);
+    print();
+  }
+
+  public boolean checkLose(int row, int col,String dec)
+  {
+    if(dec.equalsIgnoreCase("no"))
+    {
+      if(board[row][col].equals(" B "))
+      {
+        System.out.println("You lose! You chose a mine.");
+        showBoard[row][col] = board[row][col];
+        numShown = 1000000;
+        return false;
+      }
+    }
+    else if(dec.equalsIgnoreCase("yes")){return true;}
+    return true;
+    
+  }
+
+  public boolean isGameOver(int row, int col)
+  {
+    if(numShown != size - numBombs && numShown < size - numBombs)
+    {
+      return false;
+    }
+    return true;
+  }
+
+  public boolean isWinner()
+  {
+    if(numShown == size - numBombs)
+    {
+      if(run==1)
+      {System.out.print("0  ");
+      for(int col = 0; col < board[0].length;col++)
+      {
+        if(col < 10)
+        {
+          System.out.print(" " + col + " ");
+        }
+        else
+        {
+          System.out.print(" " + col);
+        }
+      }
+      System.out.println();
+      System.out.println();
+      for(int row = 0; row< board.length;row++)
+      {
+        if(row < 10)
+        {
+          System.out.print(row + "  ");
+        }
+        else
+        {
+          System.out.print(row + " ");
+        }
+        for(int col = 0; col < board[0].length;col++)
+        {
+          System.out.print(board[row][col]);
+        }
+        System.out.println();
+      }}
+      run++;
+      return true;
+    }
+    System.out.print("0  ");
+    for(int col = 0; col < board[0].length;col++)
+    {
+      if(col < 10)
+      {
+        System.out.print(" " + col + " ");
+      }
+      else
+      {
+        System.out.print(" " + col);
+      }
+    }
+    System.out.println();
+    System.out.println();
+    for(int row = 0; row< board.length;row++)
+    {
+      if(row < 10)
+      {
+        System.out.print(row + "  ");
+      }
+      else
+      {
+        System.out.print(row + " ");
+      }
+      for(int col = 0; col < board[0].length;col++)
+      {
+        System.out.print(board[row][col]);
+      }
+      System.out.println();
+    }
+    
+    return false;
+  }
+  
+  public void print()
+  {
+    if(size == 25)
+    {
+      int c = 0;
+      System.out.print("0  ");
+      for(int col = 0; col < board[0].length;col++)
+      {
+        if(col < 10)
+        {
+          System.out.print(" " + col + " ");
+        }
+        else
+        {
+          System.out.print(" " + col);
+        }
+      }
+      System.out.println();
+      System.out.println();
+      for(int row = 0; row< board.length;row++)
+      {
+        if(row < 10)
+        {
+          System.out.print(row + "  ");
+        }
+        else
+        {
+          System.out.print(row + " ");
+        }
+        for(int col = 0; col < board[0].length;col++)
+        {
+          System.out.print(board[row][col]);
+          if(board[row][col].equals(" B "))
+          {
+            c++;
+          }
+        }
+        System.out.println();
+      }
+      System.out.println();
+    }
+    
+    //ShowBoard
+    System.out.print("0  ");
+    for(int col = 0; col < board[0].length;col++)
+    {
+      if(col < 10)
+      {
+        System.out.print(" " + col + " ");
+      }
+      else
+      {
+        System.out.print(" " + col);
+      }
+    }
+    System.out.println();
+    System.out.println();
+    //shownCount = 0;
+    for(int row = 0; row< board.length;row++)
+    {
+      if(row < 10)
+      {
+        System.out.print(row + "  ");
+      }
+      else
+      {
+        System.out.print(row + " ");
+      }
+      for(int col = 0; col < board[0].length;col++)
+      {
+        System.out.print(showBoard[row][col]);
+        /*
+        if(!showBoard[row][col].equals(" # ") && !showBoard[row][col].equals(" ! "))
+        {
+          shownCount++;
+        }
+        */
+      }
+      System.out.println();
+    }
+    
+    //System.out.println("shown count: " + shownCount);
+    //System.out.println("number shown: " + numShown);
+  }
+
+  public void reset()
+  {
+    numShown = 0;
+    run = 0;
+    numFlags = 0;
+    shownCount = 0;
+    for(int row = 0; row<board.length;row++)
+    {
+      for(int col = 0; col<board.length;col++)
+      {
+        board[row][col] = null;
+      }
+    }
+  }
+}
 import java.util.Scanner;
 class Main {
   public static void main(String[] args) 
